@@ -7,6 +7,14 @@ python3 generate_csv_reports_for_project_version.py $PRODNAME $BLACKDUCK_VERSION
 
 printf "\nDone\n"
 
+arr=("development" "staging" "master")
+if [[ " ${arr[@]} " =~ " ${BRANCH} " ]]; then
+        echo "Current Environment: ${BRANCH} ..."
+else
+        echo "Use Test Environment..."
+        BRANCH="test"
+fi
+
 if test -f "reports.zip"; then
         echo "Sending to Dojo..."
         PRODID=$(curl -k -s -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Token ${DOJOKEY}" --url "${DOJOURL}/api/v2/products/?limit=1000" | jq -c '[.results[] | select(.name | contains('\"${PRODNAME}\"'))][0] | .id')
